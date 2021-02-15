@@ -1,0 +1,14 @@
+description: PWM servo
+
+compatible: "pwm-servos"
+
+child-binding:
+  description: PWM servo child node
+  properties:
+    pwms:
+      type: phandle-array
+      required: true
+    label:
+      required: true
+      type: string
+      description: Human readable string describing the device (used as device_get_binding() argument)

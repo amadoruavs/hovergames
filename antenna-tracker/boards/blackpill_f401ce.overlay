@@ -1,0 +1,66 @@
+/ {
+	servos {
+		compatible = "pwm-servos";
+
+		altitude_servo: servo_0 {
+			label = "SERVO_ALTITUDE";
+			/* 50Hz servo RCPWM frequency = 20000 microsecond pulse width */
+			pwms = <&pwm_altitude 1 20000 PWM_POLARITY_NORMAL>;
+		};
+
+		azimuth_servo: servo_1 {
+			label = "SERVO_AZIMUTH";
+			/* 50Hz servo RCPWM frequency = 20000 microsecond pulse width */
+			pwms = <&pwm_azimuth 2 20000 PWM_POLARITY_NORMAL>;
+		};
+	};
+
+	aliases {
+		imu = &mpu6050;
+		mag = &hmc5883l;
+		alt = &altitude_servo;
+		azm = &azimuth_servo;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_FAST>;
+
+	mpu6050: mpu6050@68 {
+		compatible = "invensense,mpu6050";
+		reg = <0x68>;
+		status = "okay";
+		label = "MPU6050";
+		int-gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+	};
+
+	hmc5883l: hmc5883l@1e {
+		compatible = "honeywell,hmc5883l";
+		reg = <0x1E>;
+		int-gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
+		label = "HMC5883L";
+	};
+};
+
+&timers2 {
+	status = "okay";
+
+	pwm_altitude: pwm_0 {
+		compatible = "st,stm32-pwm";
+		status = "okay";
+		st,prescaler = <2>;
+		label = "PWM_ALTITUDE";
+		pinctrl-0 = <&tim2_ch1_pa0>;
+		#pwm-cells = <3>;
+	};
+
+	pwm_azimuth: pwm_1 {
+		compatible = "st,stm32-pwm";
+		status = "okay";
+		st,prescaler = <2>;
+		label = "PWM_AZIMUTH";
+		pinctrl-0 = <&tim2_ch2_pa1>;
+		#pwm-cells = <3>;
+	};
+};

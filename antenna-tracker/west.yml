@@ -1,0 +1,20 @@
+manifest:
+  remotes:
+    - name: upstream
+      url-base: https://gitlab.com/amadoruavs
+    - name: zephyr
+      url-base: https://github.com/zephyrproject-rtos
+    - name: mavlink
+      url-base: https://github.com/mavlink
+
+  projects:
+    - name: zephyr
+      remote: zephyr
+      revision: master
+      import: true
+    - name: c_library_v2
+      revision: master
+      path: extern/include/mavlink
+      remote: mavlink
+  self:
+    path: antenna-tracker

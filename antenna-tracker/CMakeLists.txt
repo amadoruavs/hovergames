@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.13.1)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(antenna-tracker)
+
+target_include_directories(app PRIVATE include)
+target_include_directories(app PRIVATE extern/include)
+
+target_sources(app PRIVATE src/util.c)
+target_sources(app PRIVATE src/quaternion.c)
+target_sources(app PRIVATE src/usb.c)
+target_sources(app PRIVATE src/mavlink.c)
+target_sources(app PRIVATE src/imu.c)
+target_sources(app PRIVATE src/mag.c)
+target_sources(app PRIVATE src/estimator.c)
+target_sources(app PRIVATE src/pwmctrl.c)
+target_sources(app PRIVATE src/attctrl.c)
+target_sources(app PRIVATE src/main.c)
