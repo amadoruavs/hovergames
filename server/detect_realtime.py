@@ -17,6 +17,8 @@ from utils.general import check_img_size, check_requirements, non_max_suppressio
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+RASPI_SERVER_IP = "192.168.1.120"
+
 def dist(point1, point2):
     return math.sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
 
@@ -172,6 +174,8 @@ def detect(save_img=False):
             # Print time (inference + NMS)
             print(boxes)
             violations = set()
+            violation_location = None
+            drone_location = requests.get(f"http://{CTRL_SERVER_IP}:5000/telemetry").json()
             for box1, box2 in combinations(boxes, 2):
                 box1_center = (box1[0], box1[1])
                 box2_center = (box2[0], box2[1])
@@ -185,12 +189,15 @@ def detect(save_img=False):
                     cv2.line(im0, box1_center, box2_center, (0, 0, 255), 5)
                     violations.add(box1)
                     violations.add(box2)
+                    violation_location = lat_lon_distance(15, 30, drone_location["heading"], 0, drone_location["lat"], drone_location["lon"])
                 else:
                     cv2.line(im0, box1_center, box2_center, (0, 255, 0), 5)
 
             if len(violations) > 0:
                 print("violations")
                 cv2.putText(im0, f"People at risk: {len(violations)}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            if violation_location is not None:
+                requests.get(f"http://{CTRL_SERVER_IP}:5000/set_target/{violation_location[0]},{violation_location[1]}")
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
